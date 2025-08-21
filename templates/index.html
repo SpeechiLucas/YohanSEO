@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur SEO IA Ultimate</title>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-gray: #f0f2f5;
+            --text-color: #1f2937;
+            --subtle-text: #6b7280;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .input-column {
+            flex: 1;
+            min-width: 400px;
+        }
+
+        .output-column {
+            flex: 2;
+            min-width: 600px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+        }
+        h1 { text-align: center; margin-bottom: 40px; }
+        h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-top: 0; }
+        h3 { font-size: 1.1em; margin-top: 0; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--subtle-text); }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: #2563eb; }
+        #submit-button { width: 100%; padding: 14px 20px; font-size: 18px; }
+        .copy-button { padding: 5px 10px; font-size: 12px; margin-left: auto; }
+        .copy-button.copied { background-color: var(--success-color); }
+        
+        #loading-indicator { display: none; text-align: center; padding: 40px; }
+        .spinner { border: 8px solid #e5e7eb; border-top: 8px solid var(--primary-color); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Styles du tableau de bord SEO */
+        .seo-dashboard { display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: center; }
+        
+        /* Graphique du score SEO */
+        .score-graph { position: relative; width: 160px; height: 160px; }
+        .score-graph svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .score-graph circle { fill: none; }
+        .score-graph .circle-bg { stroke: #e5e7eb; stroke-width: 15; }
+        .score-graph .circle-progress { stroke: var(--success-color); stroke-width: 15; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 1s ease-out; }
+        .score-graph .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .recommendations ul { list-style-type: '✓'; padding-left: 20px; margin: 0; }
+        .recommendations ul li { padding-left: 10px; margin-bottom: 5px; color: var(--subtle-text); }
+        .recommendations ul li.bad { list-style-type: '✗'; color: var(--danger-color); }
+
+        .seo-fields .form-group { display: flex; flex-direction: column; }
+        .seo-fields .field-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        
+        #keyword-ideas-list { list-style-type: '💡'; padding-left: 20px; }
+        #keyword-ideas-list li { padding-left: 10px; margin-bottom: 8px; }
+
+        /* Styles de l'aperçu */
+        #preview-content { line-height: 1.7; font-size: 16px; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; max-height: 500px; overflow-y: auto;}
+        #preview-content h1 { font-size: 2em; } #preview-content h2 { font-size: 1.5em; } #preview-content h3 { font-size: 1.2em; }
+        
+        pre code { white-space: pre-wrap; background-color: #2d333b; color: #cdd9e5; padding: 15px; border-radius: 6px; display: block; max-height: 400px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>Générateur SEO IA Ultimate</h1>
+
+    <div class="container">
+        <main class="input-column">
+            <div class="card">
+                <h2>Paramètres de l'article</h2>
+                <form id="article-form">
+                    <div class="form-group">
+                        <label for="auteur">Auteur :</label>
+                        <select id="auteur" name="auteur" required>
+                            <option value="Claire">Claire (Pédagogique)</option>
+                            <option value="Chloé">Chloé (Marketing)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mots_clefs">Mots-clés (séparés par virgule) :</label>
+                        <input type="text" id="mots_clefs" name="mots_clefs" placeholder="seo, agence seo..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="url_externe_a_analyser">URL externe de référence :</label>
+                        <input type="url" id="url_externe_a_analyser" name="url_externe_a_analyser" placeholder="https://site-partenaire.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="url_interne_a_analyser">URL de votre site :</label>
+                        <input type="url" id="url_interne_a_analyser" name="url_interne_a_analyser" placeholder="https://mon-site.com" required>
+                    </div>
+                    <button type="submit" id="submit-button">Générer le contenu SEO</button>
+                </form>
+            </div>
+        </main>
+
+        <aside class="output-column">
+            <div id="loading-indicator">
+                <div class="spinner"></div>
+                <p>Génération en cours...</p>
+            </div>
+
+            <div id="results-dashboard" style="display: none;">
+                <div class="card">
+                    <h2>Tableau de Bord SEO</h2>
+                    <div class="seo-dashboard">
+                        <div class="score-graph">
+                            <svg viewBox="0 0 160 160">
+                                <circle class="circle-bg" cx="80" cy="80" r="70"></circle>
+                                <circle class="circle-progress" id="score-progress-circle" cx="80" cy="80" r="70"></circle>
+                            </svg>
+                            <div class="score-text" id="score-text">0%</div>
+                        </div>
+                        <div class="recommendations">
+                            <ul id="seo-recommendations"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card seo-fields">
+                    <div class="form-group">
+                        <div class="field-header">
+                            <label for="seo-title">Titre SEO</label>
+                            <button class="copy-button" data-copy-target="seo-title">Copier</button>
+                        </div>
+                        <input type="text" id="seo-title" readonly>
+                    </div>
+                    <div class="form-group">
+                        <div class="field-header">
+                            <label for="meta-desc">Méta-Description</label>
+                            <button class="copy-button" data-copy-target="meta-desc">Copier</button>
+                        </div>
+                        <textarea id="meta-desc" rows="4" readonly></textarea>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Idées pour de prochains articles</h3>
+                    <ul id="keyword-ideas-list"></ul>
+                </div>
+
+                <div class="card">
+                    <div class="field-header">
+                        <h2>Code HTML de l'article</h2>
+                        <button class="copy-button" data-copy-target="article-html-code">Copier</button>
+                    </div>
+                    <pre><code id="article-html-code"></code></pre>
+                </div>
+                
+                <div class="card">
+                    <h2>Aperçu Visuel</h2>
+                    <div id="preview-content"></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const form = document.getElementById('article-form');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const resultsDashboard = document.getElementById('results-dashboard');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            document.querySelector('.input-column').style.display = 'none';
+            resultsDashboard.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+
+            fetch('/generer-article', {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(response => {
+                if (!response.ok) return response.json().then(err => { throw new Error(err.error) });
+                return response.json();
+            })
+            .then(data => {
+                loadingIndicator.style.display = 'none';
+                
+                // Peuple tous les champs avec les données
+                document.getElementById('article-html-code').textContent = data.article_html;
+                document.getElementById('preview-content').innerHTML = data.article_html;
+                document.getElementById('seo-title').value = data.seo_title;
+                document.getElementById('meta-desc').value = data.meta_description;
+
+                updateScoreGraph(data.seo_score_data.score);
+                
+                const recoList = document.getElementById('seo-recommendations');
+                recoList.innerHTML = '';
+                data.seo_score_data.recommendations.forEach(reco => {
+                    const li = document.createElement('li');
+                    // Ajoute une classe "bad" si la recommandation n'est pas positive
+                    if (!reco.toLowerCase().includes('excellent')) {
+                        li.className = 'bad';
+                    }
+                    li.textContent = reco;
+                    recoList.appendChild(li);
+                });
+
+                const ideasList = document.getElementById('keyword-ideas-list');
+                ideasList.innerHTML = '';
+                data.keyword_ideas.forEach(idea => {
+                    const li = document.createElement('li');
+                    li.textContent = idea;
+                    ideasList.appendChild(li);
+                });
+
+                resultsDashboard.style.display = 'block';
+                setupCopyButtons();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                loadingIndicator.style.display = 'none';
+                alert('Une erreur est survenue: ' + error.message);
+                document.querySelector('.input-column').style.display = 'block';
+            });
+        });
+
+        function updateScoreGraph(score) {
+            const circle = document.getElementById('score-progress-circle');
+            const scoreText = document.getElementById('score-text');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (score / 100) * circumference;
+
+            circle.style.strokeDashoffset = offset;
+            
+            // Animer le texte du score
+            let currentScore = 0;
+            const interval = setInterval(() => {
+                currentScore++;
+                scoreText.textContent = `${currentScore}%`;
+                if (currentScore >= score) {
+                    clearInterval(interval);
+                }
+            }, 10); // Vitesse de l'animation
+
+            // Changer la couleur en fonction du score
+            if (score < 50) circle.style.stroke = 'var(--danger-color)';
+            else if (score < 80) circle.style.stroke = 'var(--warning-color)';
+            else circle.style.stroke = 'var(--success-color)';
+        }
+
+        function setupCopyButtons() {
+            document.querySelectorAll('.copy-button').forEach(button => {
+                button.onclick = () => { // Utilise onclick pour ré-attacher si le DOM change
+                    const targetId = button.dataset.copyTarget;
+                    const targetElement = document.getElementById(targetId);
+                    const textToCopy = targetElement.value || targetElement.textContent;
+                    
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        const originalText = button.textContent;
+                        button.textContent = 'Copié !';
+                        button.classList.add('copied');
+                        setTimeout(() => { 
+                            button.textContent = originalText;
+                            button.classList.remove('copied');
+                        }, 2000);
+                    });
+                };
+            });
+        }
+    </script>
+</body>
+</html>
