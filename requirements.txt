@@ -1,0 +1,4 @@
+# Contenu de requirements.txt (Manuel)
+
+Flask
+openai
